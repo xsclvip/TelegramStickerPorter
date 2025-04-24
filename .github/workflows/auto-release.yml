@@ -13,6 +13,9 @@ permissions:
   contents: write
   actions: write
 
+env:
+  SLN_PATH: TelegramStickerPorter/TelegramStickerPorter.sln
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -78,12 +81,12 @@ jobs:
 
       - name: Build & Publish
         run: |
-          dotnet restore
+          dotnet restore $SLN_PATH
           PUBLISH_ARGS="--configuration Release -r ${{ matrix.rid }} -o out/${{ matrix.rid }} /p:PublishSingleFile=true"
           if [ "${{ matrix.ready_to_run }}" = "true" ]; then
             PUBLISH_ARGS="$PUBLISH_ARGS /p:PublishReadyToRun=true"
           fi
-          dotnet publish $PUBLISH_ARGS
+          dotnet publish $SLN_PATH $PUBLISH_ARGS
           cd out/${{ matrix.rid }}
           zip -r ../${{ matrix.artifact_name }} .
           cd ../..
@@ -107,7 +110,7 @@ jobs:
         with:
           path: ./artifacts
 
-      - name: Get time & version
+      - name: Get current time and version
         id: meta
         run: |
           echo "DATETIME=$(TZ='Asia/Shanghai' date +'%Y年%m月%d日 %H:%M:%S')" >> $GITHUB_OUTPUT
