@@ -1,0 +1,147 @@
+name: Build & Auto Release (TelegramStickerPorter)
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - '.editorconfig'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "linux-x64"
+            rid: "linux-x64"
+            artifact_name: "TelegramStickerPorter-linux-x64.zip"
+            ready_to_run: false
+          - name: "linux-arm64"
+            rid: "linux-arm64"
+            artifact_name: "TelegramStickerPorter-linux-arm64.zip"
+            ready_to_run: false
+          - name: "osx-x64"
+            rid: "osx-x64"
+            artifact_name: "TelegramStickerPorter-osx-x64.zip"
+            ready_to_run: false
+          - name: "osx-arm64"
+            rid: "osx-arm64"
+            artifact_name: "TelegramStickerPorter-osx-arm64.zip"
+            ready_to_run: false
+          - name: "windows-x86"
+            rid: "win-x86"
+            artifact_name: "TelegramStickerPorter-windows-x86.zip"
+            ready_to_run: true
+          - name: "windows-x64"
+            rid: "win-x64"
+            artifact_name: "TelegramStickerPorter-windows-x64.zip"
+            ready_to_run: true
+          - name: "windows-arm64"
+            rid: "win-arm64"
+            artifact_name: "TelegramStickerPorter-windows-arm64.zip"
+            ready_to_run: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Get Version
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" **/*.csproj 2>/dev/null) || VERSION=$(date +'%Y.%m.%d.%H%M')
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Version: ${VERSION}"
+
+      - name: Build & Publish
+        run: |
+          dotnet restore
+          PUBLISH_ARGS="--configuration Release -r ${{ matrix.rid }} -o out/${{ matrix.rid }} /p:PublishSingleFile=true"
+          if [ "${{ matrix.ready_to_run }}" = "true" ]; then
+            PUBLISH_ARGS="$PUBLISH_ARGS /p:PublishReadyToRun=true"
+          fi
+          dotnet publish $PUBLISH_ARGS
+          cd out/${{ matrix.rid }}
+          zip -r ../${{ matrix.artifact_name }} .
+          cd ../..
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: out/${{ matrix.artifact_name }}
+          retention-days: 1
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Get time & version
+        id: meta
+        run: |
+          echo "DATETIME=$(TZ='Asia/Shanghai' date +'%Y年%m月%d日 %H:%M:%S')" >> $GITHUB_OUTPUT
+          echo "VERSION=$(date +'%Y.%m.%d.%H%M')" >> $GITHUB_OUTPUT
+
+      - name: Get latest commit message
+        id: commit
+        run: |
+          COMMIT=$(git log -1 --pretty=format:"%s")
+          echo "MESSAGE=$COMMIT" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.meta.outputs.VERSION }}
+          name: "Release ${{ steps.meta.outputs.VERSION }}"
+          body: |
+            ## TelegramStickerPorter 更新说明
+
+            📅 发布时间：${{ steps.meta.outputs.DATETIME }}  
+            👤 发布者：${{ github.actor }}
+
+            ### 🧾 更新内容
+            - ${{ steps.commit.outputs.MESSAGE }}
+
+            ### 💻 支持平台
+            - ✅ Windows (x64/x86/ARM64)
+            - ✅ Linux (x64/ARM64)
+            - ✅ macOS (Intel / Apple M 系列)
+
+            ### 📦 下载说明
+            根据你的系统架构，下载对应的 zip 文件解压即可运行，无需安装。
+
+          files: |
+            ./artifacts/**/*.zip

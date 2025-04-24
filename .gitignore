@@ -1,0 +1,59 @@
+# === .NET Core / ASP.NET Core ===
+bin/
+obj/
+out/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VSCode / Rider / Visual Studio settings
+.vscode/
+.idea/
+.vs/
+
+# ASP.NET Core environment-specific config
+appsettings.Development.json
+appsettings.*.local.json
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# SQLite / LiteDB / local DBs
+*.db
+*.sqlite
+*.db-shm
+*.db-wal
+
+# Secret user settings (if any)
+secrets.json
+
+# JetBrains Rider settings
+.idea/
+
+# Build results
+project.lock.json
+project.fragment.lock.json
+
+# Npm / frontend stuff (if used)
+node_modules/
+
+# Publish output
+publish/
+dist/
+wwwroot/lib/
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Mac OS / Linux / Windows system files
+.DS_Store
+Thumbs.db
+desktop.ini
