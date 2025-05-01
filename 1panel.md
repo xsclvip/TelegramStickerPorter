@@ -57,8 +57,8 @@
 为确保程序可执行，需设置运行权限：
 
 1. 回到 1Panel 后台 → 左侧点击「**文件管理器**」
-2. 进入目录 `/opt/telegram-sticker-porter/`
-3. 找到 `TelegramStickerPorter` 文件夹，点击右侧「更多操作 → 权限」
+2. 进入目录 `/opt/telegram-sticker-porter/TelegramStickerPorter/`
+3. 选中所有文件，点击右侧「更多操作 → 权限」
 4. 设置如下：
 
 | 项目     | 设置值 |
@@ -82,12 +82,11 @@
 | 项目     | 内容                                                         |
 | -------- | ------------------------------------------------------------ |
 | 名称     | `TelegramStickerPorter`                                      |
-| 执行用户 | `root`（或自定义用户）                                       |
+| 启动用户 | `root`                                       |
 | 启动命令 | `/opt/telegram-sticker-porter/TelegramStickerPorter/./TelegramStickerPorter` |
 | 启动目录 | `/opt/telegram-sticker-porter/TelegramStickerPorter`         |
-| 自动启动 | ✅ 勾选                                                       |
-| 自动重启 | ✅ 勾选                                                       |
-| 日志路径 | `/opt/telegram-sticker-porter/logs/porter.log`（可自定义）   |
+| 进程数量 | `1`                                                     |
+
 
 4. 点击「确认」，然后在守护进程列表中点击「启动」
 
@@ -113,8 +112,7 @@
 | 问题        | 解决方式                                               |
 | ----------- | ------------------------------------------------------ |
 | 没反应？    | 检查 `appsettings.json` 中的 `BotToken` 是否正确       |
-| 启动失败？  | 查看 Supervisor 日志，看是否缺少 .NET / 权限不对等     |
-| 没有 .NET？ | 使用 1Panel 应用商店安装 .NET 9.0 SDK 或手动上传运行时 |
+| 启动失败？  | 查看 Supervisor 日志，看是否路径不对或者权限不对等     |
 
 ---
 
