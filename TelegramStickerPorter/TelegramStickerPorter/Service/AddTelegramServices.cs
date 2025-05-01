@@ -17,7 +17,7 @@ public static class AddTelegramServices
     
     private static void ConfigureWTelegramLogging()
     {
-        var logDirectory = Path.Combine(AppContext.BaseDirectory, "log");
+        var logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
         Directory.CreateDirectory(logDirectory);
 
         var logFilePath = Path.Combine(logDirectory, "TelegramBot.log");
