@@ -20,3 +20,4 @@ global using Furion.ConfigurableOptions;
 global using Telegram.Bot.Types;
 global using Telegram.Bot.Types.Enums;
 global using Telegram.Bot.Types.ReplyMarkups;
+global using Microsoft.Extensions.Logging.Console;
