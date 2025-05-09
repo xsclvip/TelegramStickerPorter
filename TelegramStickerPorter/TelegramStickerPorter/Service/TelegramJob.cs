@@ -1,6 +1,4 @@
-﻿using TelegramStickerPorter;
-
-[JobDetail("job_bot_monitor", Description = "机器人检测", GroupName = "default")]
+﻿[JobDetail("job_bot_monitor", Description = "机器人检测", GroupName = "default")]
 [PeriodMinutes(5, TriggerId = "trigger_bot_monitor", Description = "每5分钟检测一次", RunOnStart = false)]
 public class TelegramJob : IJob
 {
