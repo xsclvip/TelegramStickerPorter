@@ -39,23 +39,7 @@
 - 如果使用的`v2rayN`或者`Clash`等代理软件，**请开启Tun**
 - 推荐直接部署到服务器
 - 必须拥有一个已申请的 Telegram Bot Token
-- 📦 图形化部署教程（适用于小白用户）：[点击查看 1Panel 部署教程](1panel.md)
-
-
-
-## ⚙️ 配置方式
-
-请在 `appsettings.json` 中填写您的 Bot 配置信息：
-
-```json
-{
-  "Telegram": {
-    "BotToken": "YOUR_BOT_TOKEN"
-  }
-}
-```
-
-> 🎯 你可以通过 [@BotFather](https://t.me/BotFather) 创建属于你的机器人，并获取 `BotToken`
+- 部署教程（适用于小白用户）：[点击查看 Wiki](wiki)
 
 
 
@@ -103,4 +87,9 @@
 ## ❤️ 其他
 
 > 🗨️ 有问题或者建议欢迎提 Issue，也可以直接发 PR！
+>
+> - Telegram 私聊：https://t.me/Riniba
+> - Telegram 频道：https://t.me/RinibaChannel
+> - Telegram 群组：https://t.me/RinibaGroup
+>
 > 本项目目标是打造最简洁的 Telegram 贴纸搬运工具 🛠️
