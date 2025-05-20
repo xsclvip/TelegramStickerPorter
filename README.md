@@ -14,10 +14,7 @@
 - 🔄 支持命令格式解析自动克隆
 - ⚙️ 基于 .NET 9.0 构建，性能可靠
 - 🔐 使用 Telegram Bot API，简单配置即可部署
-
 - 🧩 本软件免费无毒，可在虚拟机中运行进行长期挂机。
-- ❤️ 有问题请联系 Telegram：https://t.me/Riniba
-- 🗨️ Telegram交流群组 https://t.me/RinibaGroup
 
 ------
 
@@ -39,7 +36,7 @@
 - 如果使用的`v2rayN`或者`Clash`等代理软件，**请开启Tun**
 - 推荐直接部署到服务器
 - 必须拥有一个已申请的 Telegram Bot Token
-- 部署教程（适用于小白用户）：[点击查看 Wiki](wiki)
+-  部署教程（适用于小白用户）：[点击查看 Wiki](https://github.com/riniba/TelegramStickerPorter/wiki)
 
 
 
