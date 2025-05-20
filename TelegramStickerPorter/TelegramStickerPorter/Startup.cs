@@ -8,11 +8,8 @@ public class Startup : AppStartup
 
         services.AddConsoleFormatter();
 
-        services.AddCorsAccessor();
-
         services.AddControllers()
                 .AddInjectWithUnifyResult();
-        services.AddHttpRemote();
         services.AddSchedule(options =>
         {
             options.LogEnabled = true;
@@ -28,11 +25,7 @@ public class Startup : AppStartup
             app.UseDeveloperExceptionPage();
         }
 
-        app.UseHttpsRedirection();
-
         app.UseRouting();
-
-        app.UseCorsAccessor();
 
         app.UseInject(string.Empty);
 
