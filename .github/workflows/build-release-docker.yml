@@ -16,7 +16,7 @@ permissions:
 env:
   DOTNET_VERSION: '9.0.x'
   CONFIGURATION: Release
-  PROJECT_PATH: 'TelegramStickerPorter/TelegramStickerPorter/TelegramStickerPorter.csproj'  # 正确的项目文件路径
+  SLN_PATH: 'TelegramStickerPorter/TelegramStickerPorter/TelegramStickerPorter.sln'  
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/telegramstickerporter
 
 concurrency:
@@ -50,13 +50,13 @@ jobs:
     strategy:
       matrix:
         include:
-          # Linux 平台 - 用于 Docker 镜像和二进制发布
+          
           - { name: linux-x64,      rid: linux-x64,   arch: amd64, artifact: TelegramStickerPorter-linux-x64.tar.gz,  pack: "tar -czf", docker: true }
           - { name: linux-arm64,    rid: linux-arm64, arch: arm64, artifact: TelegramStickerPorter-linux-arm64.tar.gz,pack: "tar -czf", docker: true }
-          # macOS 平台 - 仅用于二进制发布
+          
           - { name: osx-x64,        rid: osx-x64,     artifact: TelegramStickerPorter-osx-x64.zip,       pack: "zip -r -q", docker: false }
           - { name: osx-arm64,      rid: osx-arm64,   artifact: TelegramStickerPorter-osx-arm64.zip,     pack: "zip -r -q", docker: false }
-          # Windows 平台 - 仅用于二进制发布
+          
           - { name: windows-x86,    rid: win-x86,     artifact: TelegramStickerPorter-windows-x86.zip,   pack: "zip -r -q", docker: false }
           - { name: windows-x64,    rid: win-x64,     artifact: TelegramStickerPorter-windows-x64.zip,   pack: "zip -r -q", docker: false }
           - { name: windows-arm64,  rid: win-arm64,   artifact: TelegramStickerPorter-windows-arm64.zip,pack: "zip -r -q", docker: false }
@@ -67,17 +67,14 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Restore dependencies
-        run: dotnet restore "${{ env.PROJECT_PATH }}"
       - name: Publish
         run: |
-          dotnet publish "${{ env.PROJECT_PATH }}" \
+          dotnet publish "${{ env.SLN_PATH }}" \
             --configuration "$CONFIGURATION" \
             -r "${{ matrix.rid }}" \
             --self-contained true \
             -p:PublishSingleFile=true \
-            --no-restore \
-            -o "out/${{ matrix.rid }}"
+            --output "out/${{ matrix.rid }}"
           find "out/${{ matrix.rid }}" -type f \( -name '*.pdb' -o -name '*.xml' \) -delete
           cd "out/${{ matrix.rid }}"
           ${{ matrix.pack }} "../${{ matrix.artifact }}" .
@@ -107,11 +104,11 @@ jobs:
           path: .
       - name: Prepare binaries
         run: |
-          # Extract amd64 binary
+          
           tar -xzf out/linux-amd64/TelegramStickerPorter-linux-x64.tar.gz -C out/linux-amd64 --strip-components=1
           chmod +x out/linux-amd64/TelegramStickerPorter
           
-          # Extract arm64 binary
+          
           tar -xzf out/linux-arm64/TelegramStickerPorter-linux-arm64.tar.gz -C out/linux-arm64 --strip-components=1
           chmod +x out/linux-arm64/TelegramStickerPorter
       - uses: docker/setup-qemu-action@v3
@@ -127,7 +124,7 @@ jobs:
         run: |
           IMAGE_NAME_LC=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
           
-          # 构建并直接推送 multi-platform 镜像（禁用 attestation 避免 unknown/unknown）
+          
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             --build-arg BIN_NAME=TelegramStickerPorter \
@@ -141,7 +138,7 @@ jobs:
             -t $IMAGE_NAME_LC:${{ steps.ver.outputs.VERSION }} \
             .
           
-          # 验证构建结果
+          
           echo "=== Verifying multi-platform manifest ==="
           docker buildx imagetools inspect $IMAGE_NAME_LC:latest
           docker buildx imagetools inspect $IMAGE_NAME_LC:${{ steps.ver.outputs.VERSION }}

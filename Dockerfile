@@ -4,4 +4,5 @@ ARG BIN_NAME=TelegramStickerPorter
 ARG TARGETARCH
 COPY out/linux-${TARGETARCH}/ /app/
 RUN chmod +x /app/${BIN_NAME}
+EXPOSE 5000
 ENTRYPOINT ["/app/TelegramStickerPorter"]
