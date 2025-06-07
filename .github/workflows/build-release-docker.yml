@@ -16,7 +16,7 @@ permissions:
 env:
   DOTNET_VERSION: '9.0.x'
   CONFIGURATION: Release
-  SLN_PATH: 'TelegramStickerPorter/TelegramStickerPorter.sln'  
+  PROJECT_PATH: 'src/TelegramStickerPorter.csproj'
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/telegramstickerporter
 
 concurrency:
@@ -48,7 +48,6 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false  
       matrix:
         include:
           
@@ -68,28 +67,14 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Debug - Check solution file
-        run: |
-          echo "Checking if solution file exists:"
-          ls -la TelegramStickerPorter/TelegramStickerPorter/
-          echo "Solution file path: ${{ env.SLN_PATH }}"
-          if [ -f "${{ env.SLN_PATH }}" ]; then
-            echo "✅ Solution file found"
-          else
-            echo "❌ Solution file not found"
-            exit 1
-          fi
-      - name: Restore dependencies
-        run: dotnet restore "${{ env.SLN_PATH }}"
       - name: Publish
         run: |
-          dotnet publish "${{ env.SLN_PATH }}" \
+          dotnet publish "${{ env.PROJECT_PATH }}" \
             --configuration "$CONFIGURATION" \
             -r "${{ matrix.rid }}" \
             --self-contained true \
             -p:PublishSingleFile=true \
-            --no-restore \
-            --output "out/${{ matrix.rid }}"
+            -o "out/${{ matrix.rid }}"
           find "out/${{ matrix.rid }}" -type f \( -name '*.pdb' -o -name '*.xml' \) -delete
           cd "out/${{ matrix.rid }}"
           ${{ matrix.pack }} "../${{ matrix.artifact }}" .
